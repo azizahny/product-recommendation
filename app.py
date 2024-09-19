@@ -37,24 +37,30 @@ if df is not None and not df.empty:
     # Specify the columns for searching and responding
     search_column = 'Topik Utama'   # Column to search for user input
     response_column = 'Okupasi'  # Column to return response from
-
-    def chatbot_response(user_input, knowledge_base, search_column, response_column):
+    additional_columns = ['Deskripsi', 'Durasi']  # List additional columns to display
+    
+    def chatbot_response(user_input, knowledge_base, search_column, response_column, additional_columns):
         user_input = user_input.lower()
         matches = []
         
         for index, row in knowledge_base.iterrows():
             search_text = str(row.get(search_column, '')).lower()
             if user_input in search_text:
-                matches.append(str(row.get(response_column, 'No Response Available')))
+                response_info = {response_column: row.get(response_column, 'No Response Available')}
+                for col in additional_columns:
+                    response_info[col] = row.get(col, 'No Data Available')
+                matches.append(response_info)
         
-        return matches if matches else ["Sorry, I don't have an answer for that."]
+        return matches if matches else [{"message": "Sorry, I don't have an answer for that."}]
 
-    user_input = st.text_input("Ask me anything:")
+    user_input = st.text_input("Topik apa yang kamu mau pelajari:")
     if user_input:
-        responses = chatbot_response(user_input, df, search_column, response_column)
+        responses = chatbot_response(user_input, df, search_column, response_column, additional_columns)
         if responses:
-            st.write("Here are the possible matches:")
+            st.write("Kamu bisa pilih course ini:")
             for response in responses:
-                st.write(f"- {response}")
+                st.write(f"- {response[response_column]}: {response.get('Deskripsi', '')}, Durasi: {response.get('Durasi', '')}")
+        else:
+            st.write(responses[0]['message'])
 else:
     st.warning("Data could not be loaded. Please check the file and try again.")
