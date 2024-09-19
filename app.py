@@ -37,7 +37,7 @@ if df is not None and not df.empty:
     # Specify the columns for searching and responding
     search_column = 'Topik Utama'   # Column to search for user input
     response_column = 'Okupasi'  # Column to return response from
-    additional_columns = ['Deskripsi', 'Durasi']  # List additional columns to display
+    additional_columns = ['Jenjang', 'Durasi', 'Deskripsi']  # List additional columns to display
     
     def chatbot_response(user_input, knowledge_base, search_column, response_column, additional_columns):
         user_input = user_input.lower()
@@ -57,9 +57,10 @@ if df is not None and not df.empty:
     if user_input:
         responses = chatbot_response(user_input, df, search_column, response_column, additional_columns)
         if responses:
+            # Convert the list of dictionaries to a DataFrame
+            results_df = pd.DataFrame(responses)
             st.write("Kamu bisa pilih course ini:")
-            for response in responses:
-                st.write(f"- {response[response_column]}: {response.get('Deskripsi', '')}, Durasi: {response.get('Durasi', '')}")
+            st.table(results_df)  # Display the DataFrame as a table
         else:
             st.write(responses[0]['message'])
 else:
