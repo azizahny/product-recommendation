@@ -13,7 +13,7 @@ def download_csv_from_gcs(bucket_name, file_name):
 st.title("Knowledge Base Chatbot")
 
 # Load CSV data
-bucket_name = "chatbot-bucket"
+bucket_name = "cakap-product"
 file_name = "tvet_course_library.csv"
 df = download_csv_from_gcs(bucket_name, file_name)
 
