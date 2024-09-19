@@ -36,8 +36,8 @@ df = download_csv_from_gcs("cakap-product", "tvet_course_library.csv")
 if df is not None and not df.empty:
     # Specify the columns for searching and responding
     search_column = 'Topik Utama'   # Column to search for user input
-    response_column = 'Okupasi'  # Column to return response from
-    additional_columns = ['Jenjang', 'Durasi', 'Deskripsi']  # List additional columns to display
+    response_column = 'Judul Pelatihan'  # Column to return response from
+    additional_columns = ['Durasi Pelatihan', 'Jenjang', 'Deskripsi Pelatihan']  # List additional columns to display
     
     def chatbot_response(user_input, knowledge_base, search_column, response_column, additional_columns):
         user_input = user_input.lower()
