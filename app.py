@@ -29,7 +29,7 @@ def download_csv_from_gcs(bucket_name, file_name):
 # Streamlit app
 st.title("Upskill Cakap Product")
 
-# Initialize df as None
+# Load CSV data
 df = download_csv_from_gcs("cakap-product", "tvet_course_library.csv")
 
 # Ensure df is defined before proceeding
@@ -40,17 +40,21 @@ if df is not None and not df.empty:
 
     def chatbot_response(user_input, knowledge_base, search_column, response_column):
         user_input = user_input.lower()
+        matches = []
         
         for index, row in knowledge_base.iterrows():
             search_text = str(row.get(search_column, '')).lower()
             if user_input in search_text:
-                return str(row.get(response_column, 'No Response Available'))
+                matches.append(str(row.get(response_column, 'No Response Available')))
         
-        return "Sorry, I don't have an answer for that."
+        return matches if matches else ["Sorry, I don't have an answer for that."]
 
     user_input = st.text_input("Ask me anything:")
     if user_input:
-        response = chatbot_response(user_input, df, search_column, response_column)
-        st.write(response)
+        responses = chatbot_response(user_input, df, search_column, response_column)
+        if responses:
+            st.write("Here are the possible matches:")
+            for response in responses:
+                st.write(f"- {response}")
 else:
     st.warning("Data could not be loaded. Please check the file and try again.")
