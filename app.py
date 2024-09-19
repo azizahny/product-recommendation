@@ -40,19 +40,25 @@ df = None
 bucket_name = "cakap-product"
 file_name = "tvet_course_library.csv"
 
-def chatbot_response(user_input, knowledge_base, search_column, response_column):
-    user_input = user_input.lower()
-    
-    # Iterate over rows and check for the presence of user_input in the search_column
-    for index, row in knowledge_base.iterrows():
-        # Convert column data to string and lower case
-        search_text = str(row.get(search_column, '')).lower()
-        
-        # Check if user_input is a substring of search_text
-        if user_input in search_text:
-            # Return the corresponding value from response_column
-            return str(row.get(response_column, 'No Response Available'))
-    
-    # Return a default message if no match is found
-    return "Sorry, I don't have an answer for that."
+# Ensure df is defined before proceeding
+if df is not None and not df.empty:
+    # Specify the columns for searching and responding
+    search_column = 'Topik Utama'   # Column to search for user input
+    response_column = 'Okupasi'  # Column to return response from
 
+    def chatbot_response(user_input, knowledge_base, search_column, response_column):
+        user_input = user_input.lower()
+        
+        for index, row in knowledge_base.iterrows():
+            search_text = str(row.get(search_column, '')).lower()
+            if user_input in search_text:
+                return str(row.get(response_column, 'No Response Available'))
+        
+        return "Sorry, I don't have an answer for that."
+
+    user_input = st.text_input("Ask me anything:")
+    if user_input:
+        response = chatbot_response(user_input, df, search_column, response_column)
+        st.write(response)
+else:
+    st.warning("Data could not be loaded. Please check the file and try again.")
