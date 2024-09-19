@@ -9,8 +9,7 @@ def download_csv_from_gcs(bucket_name, file_name):
     blob = bucket.blob(file_name)
     data = blob.download_as_string()
     # return pd.read_csv(pd.compat.StringIO(data.decode('utf-8')))
-    columns = ['Study','Okupasi']
-    return pd.read_csv(io.StringIO(data.decode('utf-8')), names=columns)
+    return pd.read_csv(io.StringIO(data.decode('utf-8')))
 
 # Streamlit app
 st.title("Knowledge Base Chatbot")
@@ -18,8 +17,16 @@ st.title("Knowledge Base Chatbot")
 # Load CSV data
 bucket_name = "cakap-product"
 file_name = "tvet_course_library.csv"
-df = download_csv_from_gcs(bucket_name, file_name)
 
+# df = download_csv_from_gcs(bucket_name, file_name)
+
+# Add error handling in case the file can't be loaded
+try:
+    df = download_csv_from_gcs(bucket_name, file_name)
+    st.write("Knowledge Base Data Loaded:")
+    st.write(df.head())  # Display the first few rows of the data
+except Exception as e:
+    st.error(f"Error loading data: {e}")
 st.write("Knowledge Base Data Loaded:")
 st.write(df.head())
 
