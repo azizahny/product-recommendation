@@ -13,8 +13,17 @@ def download_csv_from_gcs(bucket_name, file_name):
         # Download the data from the blob
         data = blob.download_as_string()
         
+        # Log the first few bytes of data for inspection
+        st.write("Raw data snippet:")
+        st.write(data.decode('utf-8')[:500])  # Display a snippet of the raw data
+
         # Read the CSV content using io.StringIO to convert the string into a file-like object
         df = pd.read_csv(io.StringIO(data.decode('utf-8')))
+        
+        # Log the first few rows of the DataFrame
+        st.write("DataFrame head:")
+        st.write(df.head())
+        
         return df
     except Exception as e:
         # Print detailed error messages
