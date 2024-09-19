@@ -18,8 +18,7 @@ def download_csv_from_gcs(bucket_name, file_name):
         st.write(data.decode('utf-8')[:500])  # Display a snippet of the raw data
 
         # Read the CSV content using io.StringIO to convert the string into a file-like object
-        # df = pd.read_csv(io.StringIO(data.decode('utf-8')))
-        df = pd.read_csv(io.StringIO(data.decode('utf-8')), delimiter=';', header=0)
+        df = pd.read_csv(io.StringIO(data.decode('utf-8')), delimiter=',', header=0)
         
         # Log the first few rows of the DataFrame
         st.write("DataFrame head:")
@@ -55,9 +54,15 @@ except Exception as e:
 # Ensure df is defined before proceeding
 if df is not None and not df.empty:
     def chatbot_response(user_input, knowledge_base):
+        user_input = user_input.lower()
+        
         for index, row in knowledge_base.iterrows():
-            if user_input.lower() in row.get('Study', '').lower():  # Use .get() to avoid KeyError
-                return row.get('Okupasi', 'No Okupasi Available')  # Use .get() to avoid KeyError
+            # Convert row values to string and then check
+            study_text = str(row.get('Study', '')).lower()
+            
+            if user_input in study_text:
+                return str(row.get('Okupasi', 'No Okupasi Available'))
+        
         return "Sorry, I don't have an answer for that."
 
     user_input = st.text_input("Ask me anything:")
