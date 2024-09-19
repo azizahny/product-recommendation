@@ -1,13 +1,15 @@
 from google.cloud import storage
 import pandas as pd
 import streamlit as st
+import io 
 
 def download_csv_from_gcs(bucket_name, file_name):
     storage_client = storage.Client()
     bucket = storage_client.get_bucket(bucket_name)
     blob = bucket.blob(file_name)
     data = blob.download_as_string()
-    return pd.read_csv(pd.compat.StringIO(data.decode('utf-8')))
+    # return pd.read_csv(pd.compat.StringIO(data.decode('utf-8')))
+    return pd.read_csv(io.StringIO(data.decode('utf-8')))
 
 # Streamlit app
 st.title("Knowledge Base Chatbot")
