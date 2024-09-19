@@ -18,7 +18,7 @@ def download_csv_from_gcs(bucket_name, file_name):
         st.write(data.decode('utf-8')[:500])  # Display a snippet of the raw data
 
         # Read the CSV content using io.StringIO to convert the string into a file-like object
-        df = pd.read_csv(io.StringIO(data.decode('utf-8')), delimiter=',', header=0)
+        df = pd.read_csv(io.StringIO(data.decode('utf-8')), delimiter=';', header=0)
         
         # Log the first few rows of the DataFrame
         st.write("DataFrame head:")
