@@ -14,15 +14,15 @@ def download_csv_from_gcs(bucket_name, file_name):
         data = blob.download_as_string()
         
         # Log the first few bytes of data for inspection
-        st.write("Raw data snippet:")
-        st.write(data.decode('utf-8')[:500])  # Display a snippet of the raw data
+        # st.write("Raw data snippet:")
+        # st.write(data.decode('utf-8')[:500])  # Display a snippet of the raw data
 
         # Read the CSV content using io.StringIO to convert the string into a file-like object
         df = pd.read_csv(io.StringIO(data.decode('utf-8')), delimiter=';', header=0)
         
         # Log the first few rows of the DataFrame
-        st.write("DataFrame head:")
-        st.write(df.head())
+        # st.write("DataFrame head:")
+        # st.write(df.head())
         
         return df
     except Exception as e:
@@ -31,7 +31,7 @@ def download_csv_from_gcs(bucket_name, file_name):
         return None
 
 # Streamlit app
-st.title("Knowledge Base Chatbot")
+st.title("Upskill Cakap Product")
 
 # Initialize df as None
 df = None
@@ -40,34 +40,19 @@ df = None
 bucket_name = "cakap-product"
 file_name = "tvet_course_library.csv"
 
-# Add error handling in case the file can't be loaded
-try:
-    df = download_csv_from_gcs(bucket_name, file_name)
-    if df is not None and not df.empty:
-        st.write("Knowledge Base Data Loaded:")
-        st.write(df.head())  # Display the first few rows of the data
-    else:
-        st.warning("Data is empty or not loaded properly.")
-except Exception as e:
-    st.error(f"Error loading data: {e}")
-
-# Ensure df is defined before proceeding
-if df is not None and not df.empty:
-    def chatbot_response(user_input, knowledge_base):
-        user_input = user_input.lower()
+def chatbot_response(user_input, knowledge_base, search_column, response_column):
+    user_input = user_input.lower()
+    
+    # Iterate over rows and check for the presence of user_input in the search_column
+    for index, row in knowledge_base.iterrows():
+        # Convert column data to string and lower case
+        search_text = str(row.get(search_column, '')).lower()
         
-        for index, row in knowledge_base.iterrows():
-            # Convert row values to string and then check
-            study_text = str(row.get('Study', '')).lower()
-            
-            if user_input in study_text:
-                return str(row.get('Okupasi', 'No Okupasi Available'))
-        
-        return "Sorry, I don't have an answer for that."
+        # Check if user_input is a substring of search_text
+        if user_input in search_text:
+            # Return the corresponding value from response_column
+            return str(row.get(response_column, 'No Response Available'))
+    
+    # Return a default message if no match is found
+    return "Sorry, I don't have an answer for that."
 
-    user_input = st.text_input("Ask me anything:")
-    if user_input:
-        response = chatbot_response(user_input, df)
-        st.write(response)
-else:
-    st.warning("Data could not be loaded. Please check the file and try again.")
